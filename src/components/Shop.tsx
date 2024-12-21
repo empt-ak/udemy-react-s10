@@ -1,22 +1,11 @@
-import { DUMMY_PRODUCTS } from '../dummy-products.ts'
-import Product from './Product.tsx'
+import { PropsWithChildren } from 'react'
 
-export interface ShopProps {
-  onAddItemToCart: (id: string) => void
-}
-
-const Shop = ({ onAddItemToCart }: ShopProps) => {
+const Shop = ({ children }: PropsWithChildren) => {
   return (
     <section id="shop">
       <h2>Elegant Clothing For Everyone</h2>
 
-      <ul id="products">
-        {DUMMY_PRODUCTS.map((product) => (
-          <li key={product.id}>
-            <Product product={product} onAddToCart={onAddItemToCart} />
-          </li>
-        ))}
-      </ul>
+      <ul id="products">{children}</ul>
     </section>
   )
 }

@@ -3,6 +3,7 @@ import { DUMMY_PRODUCTS } from './dummy-products.ts'
 import Shop from './components/Shop.tsx'
 import Header from './components/Header.tsx'
 import { CartType } from './models/cart-type.ts'
+import Product from './components/Product.tsx'
 
 const App = () => {
   const [shoppingCart, setShoppingCart] = useState<CartType>({
@@ -73,7 +74,13 @@ const App = () => {
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
       />
-      <Shop onAddItemToCart={handleAddItemToCart} />
+      <Shop>
+        {DUMMY_PRODUCTS.map((product) => (
+          <li key={product.id}>
+            <Product product={product} onAddToCart={handleAddItemToCart} />
+          </li>
+        ))}
+      </Shop>
     </>
   )
 }
