@@ -1,36 +1,33 @@
-import { PropsWithChildren, useState } from 'react'
+import { PropsWithChildren, useReducer } from 'react'
 import { CartItem } from '../models/cart-item.ts'
 import { CartContext } from './shopping-cart-context.tsx'
 import { DUMMY_PRODUCTS } from '../dummy-products.ts'
+import { ActionTypes, CartActions } from './actions/shopping-cart-actions.ts'
 
 type CartItems = {
   items: CartItem[]
 }
 
-// see https://github.com/remix-run/react-router/discussions/10856
-const CartContextProvider = ({ children }: PropsWithChildren) => {
-  const [shoppingCart, setShoppingCart] = useState<CartItems>({
-    items: [],
-  })
+const shoppingCartReducer = (
+  state: CartItems,
+  action: CartActions
+): CartItems => {
+  switch (action.type) {
+    case ActionTypes.ADD_ITEM: {
+      const copy = [...state.items]
 
-  const handleAddItemToCart = (id: string) => {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items]
-
-      const existingCartItemIndex = updatedItems.findIndex(
-        (cartItem) => cartItem.id === id
-      )
-      const existingCartItem = updatedItems[existingCartItemIndex]
+      const existingCartItemIndex = copy.findIndex((it) => it.id === action.id)
+      const existingCartItem = copy[existingCartItemIndex]
 
       if (existingCartItem) {
-        updatedItems[existingCartItemIndex] = {
+        copy[existingCartItemIndex] = {
           ...existingCartItem,
           quantity: existingCartItem.quantity + 1,
         }
       } else {
-        const product = DUMMY_PRODUCTS.find((product) => product.id === id)!
-        updatedItems.push({
-          id: id,
+        const product = DUMMY_PRODUCTS.find((p) => p.id === action.id)!
+        copy.push({
+          id: action.id,
           name: product.title,
           price: product.price,
           quantity: 1,
@@ -38,45 +35,53 @@ const CartContextProvider = ({ children }: PropsWithChildren) => {
       }
 
       return {
-        items: updatedItems,
+        items: copy,
       }
-    })
-  }
-
-  const handleUpdateCartItemQuantity = (
-    productId: string,
-    amount: number
-  ): void => {
-    setShoppingCart((prevShoppingCart) => {
-      const updatedItems = [...prevShoppingCart.items]
-      const updatedItemIndex = updatedItems.findIndex(
-        (item) => item.id === productId
-      )
+    }
+    case ActionTypes.UPDATE_ITEM: {
+      const copy = [...state.items]
+      const idx = copy.findIndex((it) => it.id === action.id)
 
       const updatedItem = {
-        ...updatedItems[updatedItemIndex],
+        ...copy[idx],
       }
 
-      updatedItem.quantity += amount
+      updatedItem.quantity += action.qty
 
       if (updatedItem.quantity <= 0) {
-        updatedItems.splice(updatedItemIndex, 1)
+        copy.splice(idx, 1)
       } else {
-        updatedItems[updatedItemIndex] = updatedItem
+        copy[idx] = updatedItem
       }
 
       return {
-        items: updatedItems,
+        items: copy,
       }
-    })
+    }
+    default:
+      return {
+        items: state.items,
+      }
   }
+}
+
+// see https://github.com/remix-run/react-router/discussions/10856
+const CartContextProvider = ({ children }: PropsWithChildren) => {
+  const [shoppingCartState, shoppingCartDispatch] = useReducer(
+    shoppingCartReducer,
+    { items: [] }
+  )
 
   return (
     <CartContext.Provider
       value={{
-        items: shoppingCart.items,
-        addItemToCart: handleAddItemToCart,
-        updateCartItemQuantity: handleUpdateCartItemQuantity,
+        items: shoppingCartState.items,
+        addItemToCart: (id: string) => {
+          shoppingCartDispatch({ type: ActionTypes.ADD_ITEM, id })
+        },
+        updateCartItemQuantity: (id: string, qty: number) => {
+          shoppingCartDispatch({ type: ActionTypes.UPDATE_ITEM, id, qty })
+        },
       }}
     >
       {children}
