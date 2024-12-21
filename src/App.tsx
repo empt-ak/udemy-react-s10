@@ -1,33 +1,79 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { DUMMY_PRODUCTS } from './dummy-products.ts'
+import Shop from './components/Shop.tsx'
+import Header from './components/Header.tsx'
+import { CartType } from './models/cart-type.ts'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [shoppingCart, setShoppingCart] = useState<CartType>({
+    items: [],
+  })
+
+  const handleAddItemToCart = (id: string) => {
+    setShoppingCart((prevShoppingCart) => {
+      const updatedItems = [...prevShoppingCart.items]
+
+      const existingCartItemIndex = updatedItems.findIndex(
+        (cartItem) => cartItem.id === id
+      )
+      const existingCartItem = updatedItems[existingCartItemIndex]
+
+      if (existingCartItem) {
+        updatedItems[existingCartItemIndex] = {
+          ...existingCartItem,
+          quantity: existingCartItem.quantity + 1,
+        }
+      } else {
+        const product = DUMMY_PRODUCTS.find((product) => product.id === id)!
+        updatedItems.push({
+          id: id,
+          name: product.title,
+          price: product.price,
+          quantity: 1,
+        })
+      }
+
+      return {
+        items: updatedItems,
+      } as CartType
+    })
+  }
+
+  const handleUpdateCartItemQuantity = (
+    productId: string,
+    amount: number
+  ): void => {
+    setShoppingCart((prevShoppingCart) => {
+      const updatedItems = [...prevShoppingCart.items]
+      const updatedItemIndex = updatedItems.findIndex(
+        (item) => item.id === productId
+      )
+
+      const updatedItem = {
+        ...updatedItems[updatedItemIndex],
+      }
+
+      updatedItem.quantity += amount
+
+      if (updatedItem.quantity <= 0) {
+        updatedItems.splice(updatedItemIndex, 1)
+      } else {
+        updatedItems[updatedItemIndex] = updatedItem
+      }
+
+      return {
+        items: updatedItems,
+      }
+    })
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header
+        cart={shoppingCart}
+        onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
+      />
+      <Shop onAddItemToCart={handleAddItemToCart} />
     </>
   )
 }
