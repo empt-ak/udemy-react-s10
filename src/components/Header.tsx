@@ -9,12 +9,12 @@ export interface HeaderProps {
 }
 
 const  Header = ({ cart, onUpdateCartItemQuantity }: HeaderProps) => {
-  const modal = useRef<ModalRef>(null);
+  const modal = useRef<ModalRef>(null)
 
-  const cartQuantity = cart.items.length;
+  const cartQuantity = cart.items.length
 
   function handleOpenCartClick() {
-    modal.current!.open();
+    modal.current!.open()
   }
 
   let modalActions = <button>Close</button>;
@@ -25,7 +25,7 @@ const  Header = ({ cart, onUpdateCartItemQuantity }: HeaderProps) => {
         <button>Close</button>
         <button>Checkout</button>
       </>
-    );
+    )
   }
 
   return (

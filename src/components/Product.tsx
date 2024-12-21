@@ -1,11 +1,14 @@
 import { Item } from '../models/item.ts'
+import { useContext } from 'react'
+import { CartContext } from '../store/shopping-cart-context.tsx'
 
 export interface ProductProps {
   product: Item
-  onAddToCart: (id: string) => void
 }
 
-const Product = ({ product, onAddToCart }: ProductProps) => {
+const Product = ({ product }: ProductProps) => {
+  const { handleAddItemToCart } = useContext(CartContext)
+
   return (
     <article className="product">
       <img src={product.image} alt={product.title} />
@@ -16,7 +19,9 @@ const Product = ({ product, onAddToCart }: ProductProps) => {
           <p>{product.description}</p>
         </div>
         <p className="product-actions">
-          <button onClick={() => onAddToCart(product.id)}>Add to Cart</button>
+          <button onClick={() => handleAddItemToCart(product.id)}>
+            Add to Cart
+          </button>
         </p>
       </div>
     </article>
