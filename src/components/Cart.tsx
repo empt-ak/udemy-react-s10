@@ -1,11 +1,15 @@
 import { CartItem } from '../models/cart-item.ts'
+import { useContext } from 'react'
+import { CartContext } from '../store/shopping-cart-context.tsx'
+import { CartType } from '../models/cart-type.ts'
 
 export interface CartProps {
   items: CartItem[]
   onUpdateItemQuantity: (id: string, qty: number) => void
 }
 
-const Cart = ({ items, onUpdateItemQuantity }: CartProps) => {
+const Cart = ({  onUpdateItemQuantity }: CartProps) => {
+  const {items} = useContext<CartType>(CartContext)
   const totalPrice = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0

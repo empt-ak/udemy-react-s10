@@ -4,6 +4,7 @@ import Shop from './components/Shop.tsx'
 import Header from './components/Header.tsx'
 import { CartType } from './models/cart-type.ts'
 import Product from './components/Product.tsx'
+import { CartContext } from './store/shopping-cart-context.tsx'
 
 const App = () => {
   const [shoppingCart, setShoppingCart] = useState<CartType>({
@@ -69,7 +70,7 @@ const App = () => {
   }
 
   return (
-    <>
+    <CartContext.Provider value={shoppingCart}>
       <Header
         cart={shoppingCart}
         onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
@@ -81,7 +82,7 @@ const App = () => {
           </li>
         ))}
       </Shop>
-    </>
+    </CartContext.Provider>
   )
 }
 
