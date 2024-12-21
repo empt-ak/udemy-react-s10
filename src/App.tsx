@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { DUMMY_PRODUCTS } from './dummy-products.ts'
 import Shop from './components/Shop.tsx'
 import Header from './components/Header.tsx'
-import { CartType } from './models/cart-type.ts'
 import Product from './components/Product.tsx'
 import { CartContext } from './store/shopping-cart-context.tsx'
+import { CartItem } from './models/cart-item.ts'
 
 const App = () => {
-  const [shoppingCart, setShoppingCart] = useState<CartType>({
-    items: [],
-    handleAddItemToCart: () => {},
-  })
+  const [shoppingCart, setShoppingCart] = useState<Record<'items', CartItem[]>>(
+    {
+      items: [],
+    }
+  )
 
   const handleAddItemToCart = (id: string) => {
     setShoppingCart((prevShoppingCart) => {
@@ -38,7 +39,7 @@ const App = () => {
 
       return {
         items: updatedItems,
-      } as CartType
+      }
     })
   }
 
@@ -66,16 +67,19 @@ const App = () => {
 
       return {
         items: updatedItems,
-        handleAddItemToCart,
       }
     })
   }
 
   return (
     <CartContext.Provider
-      value={{ items: shoppingCart.items, handleAddItemToCart }}
+      value={{
+        items: shoppingCart.items,
+        addItemToCart: handleAddItemToCart,
+        updateCartItemQuantity: handleUpdateCartItemQuantity,
+      }}
     >
-      <Header onUpdateCartItemQuantity={handleUpdateCartItemQuantity} />
+      <Header />
       <Shop>
         {DUMMY_PRODUCTS.map((product) => (
           <li key={product.id}>

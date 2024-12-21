@@ -7,7 +7,7 @@ export interface ProductProps {
 }
 
 const Product = ({ product }: ProductProps) => {
-  const { handleAddItemToCart } = useContext(CartContext)
+  const { addItemToCart } = useContext(CartContext)
 
   return (
     <article className="product">
@@ -19,7 +19,7 @@ const Product = ({ product }: ProductProps) => {
           <p>{product.description}</p>
         </div>
         <p className="product-actions">
-          <button onClick={() => handleAddItemToCart(product.id)}>
+          <button onClick={() => addItemToCart(product.id)}>
             Add to Cart
           </button>
         </p>
