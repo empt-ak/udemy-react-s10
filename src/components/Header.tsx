@@ -1,17 +1,17 @@
-import { useRef } from 'react';
+import { useContext, useRef } from 'react'
 
 import CartModal, { ModalRef } from './CartModal.tsx'
-import { CartType } from '../models/cart-type.ts'
+import { CartContext } from '../store/shopping-cart-context.tsx'
 
 export interface HeaderProps {
-  cart: CartType,
   onUpdateCartItemQuantity: (id: string, qty: number) => void
 }
 
-const  Header = ({ cart, onUpdateCartItemQuantity }: HeaderProps) => {
+const  Header = ({  onUpdateCartItemQuantity }: HeaderProps) => {
+  const {items} = useContext(CartContext)
   const modal = useRef<ModalRef>(null)
 
-  const cartQuantity = cart.items.length
+  const cartQuantity = items.length
 
   function handleOpenCartClick() {
     modal.current!.open()
@@ -32,7 +32,6 @@ const  Header = ({ cart, onUpdateCartItemQuantity }: HeaderProps) => {
     <>
       <CartModal
         ref={modal}
-        cartItems={cart.items}
         onUpdateCartItemQuantity={onUpdateCartItemQuantity}
         title="Your Cart"
         actions={modalActions}

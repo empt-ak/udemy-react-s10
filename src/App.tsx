@@ -9,7 +9,7 @@ import { CartContext } from './store/shopping-cart-context.tsx'
 const App = () => {
   const [shoppingCart, setShoppingCart] = useState<CartType>({
     items: [],
-    handleAddItemToCart: () => {}
+    handleAddItemToCart: () => {},
   })
 
   const handleAddItemToCart = (id: string) => {
@@ -72,11 +72,10 @@ const App = () => {
   }
 
   return (
-    <CartContext.Provider value={{items: shoppingCart.items, handleAddItemToCart}}>
-      <Header
-        cart={shoppingCart}
-        onUpdateCartItemQuantity={handleUpdateCartItemQuantity}
-      />
+    <CartContext.Provider
+      value={{ items: shoppingCart.items, handleAddItemToCart }}
+    >
+      <Header onUpdateCartItemQuantity={handleUpdateCartItemQuantity} />
       <Shop>
         {DUMMY_PRODUCTS.map((product) => (
           <li key={product.id}>
